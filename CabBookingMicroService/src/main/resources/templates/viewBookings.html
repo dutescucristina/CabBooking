@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>View Bookings</title>
+</head>
+<body>
+<table border="1" class="table table-stripped">
+    <tr>
+        <th>Email</th>
+        <th>From</th>
+        <th>To</th>
+        <th>Cab Type</th>
+        <th>Price</th>
+    </tr>
+    <tr th:each ="b:${bookings}">
+        <td th:text="${b.email}"></td>
+        <td th:text="${b.fromLocation}"></td>
+        <td th:text="${b.toLocation}"></td>
+        <td th:text="${b.typeOfCab}"></td>
+        <td th:text="${b.price}"></td>
+    </tr>
+</table>
+</body>
+</html>
