@@ -29,7 +29,8 @@ public class BookingController {
 	@RequestMapping(value = "addBooking",method = RequestMethod.POST)
 	public String addBooking(HttpServletRequest req, Booking booking, Model model) {
 		bookingService.addBooking(booking);
-		return "index";
+		model.addAttribute("bookings", getBookingsInfo());
+		return "viewBookings";
 	}
 	
 	@GetMapping(value = "getBookings")
@@ -54,31 +55,7 @@ public class BookingController {
 
 	@RequestMapping(value = "viewBookings",method = RequestMethod.GET)
 	public String viewBookings(Model model) {
-		List<Location> locations = bookingService.getLocations();
-
-		Map<Integer,Location> map = new HashMap<>(locations.size());
-		for (Location i : locations) map.put(i.getId(),i);
-
-		List<Booking> bookings = bookingService.getBookings();
-		List<BookingInfo> bookingResults = new ArrayList<>();
-		for(Booking b: bookings){
-			Location l = map.get(b.getLocationId());
-			//call endpoint to calculate price
-			Integer percent = 0;
-			for (CabTypeEnum cte : CabTypeEnum.values()) {
-				if (cte.getType() == b.getTypeOfCab()) {
-					percent = cte.getPercent();
-					break;
-				}
-			}
-			CalculateRequest request = new CalculateRequest(b.getLocationId(), percent);
-
-			Integer totalPrice = bookingService.calculateFare(request);
-			BookingInfo bi = new BookingInfo(totalPrice , b.getId(), l.getFromLocation(), l.getToLocation(), "Class "+b.getTypeOfCab(), b.getEmail());
-			bookingResults.add(bi);
-		}
-
-		model.addAttribute("bookings", bookingResults);
+		model.addAttribute("bookings", getBookingsInfo());
 		return "viewBookings";
 	}
 
@@ -124,5 +101,32 @@ public class BookingController {
 		model.addAttribute("lid", locationId);
 		model.addAttribute("cti", cabType);
 		return "calculateFare";
+	}
+
+	private List<BookingInfo> getBookingsInfo(){
+		List<Location> locations = bookingService.getLocations();
+
+		Map<Integer,Location> map = new HashMap<>(locations.size());
+		for (Location i : locations) map.put(i.getId(),i);
+
+		List<Booking> bookings = bookingService.getBookings();
+		List<BookingInfo> bookingResults = new ArrayList<>();
+		for(Booking b: bookings){
+			Location l = map.get(b.getLocationId());
+			//call endpoint to calculate price
+			Integer percent = 0;
+			for (CabTypeEnum cte : CabTypeEnum.values()) {
+				if (cte.getType() == b.getTypeOfCab()) {
+					percent = cte.getPercent();
+					break;
+				}
+			}
+			CalculateRequest request = new CalculateRequest(b.getLocationId(), percent);
+
+			Integer totalPrice = bookingService.calculateFare(request);
+			BookingInfo bi = new BookingInfo(totalPrice , b.getId(), l.getFromLocation(), l.getToLocation(), "Class "+b.getTypeOfCab(), b.getEmail());
+			bookingResults.add(bi);
+		}
+		return bookingResults;
 	}
 }

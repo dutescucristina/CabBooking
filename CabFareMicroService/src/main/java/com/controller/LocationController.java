@@ -17,7 +17,7 @@ public class LocationController {
     LocationService locationService;
 
     @PostMapping(value = "calculate",consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Integer createAccount(@RequestBody CalculateRequest calculateRequest) {
+    public Integer calculateFare(@RequestBody CalculateRequest calculateRequest) {
         return locationService.calculateFare(calculateRequest);
     }
 
